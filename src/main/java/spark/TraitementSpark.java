@@ -28,8 +28,10 @@ public class TraitementSpark {
 		SparkSession spark = SparkSession.builder()
 			      .master("local")
 			      .appName("MongoSparkConnectorIntro")
-			      .config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.user")
-			      .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.responseCollection")
+			      //.config("spark.mongodb.input.uri", "mongodb://127.0.0.1/test.user")
+			      
+			    	  .config("spark.mongodb.input.uri","mongodb://admin:admin@ds155091.mlab.com:55091/sportifydb.users")
+			     // .config("spark.mongodb.output.uri", "mongodb://127.0.0.1/test.responseCollection")
 			      .getOrCreate();
 
 			    // Create a JavaSparkContext using the SparkSession's SparkContext object
@@ -39,16 +41,17 @@ public class TraitementSpark {
 			    /*Start Example: Read data from MongoDB************************/
 			    JavaMongoRDD<Document> rdd = MongoSpark.load(jsc);
 			    System.out.println("avant erreur");
+			    System.out.println(rdd.count());
 			    /*End Example**************************************************/
-			    JavaMongoRDD<Document> aggregatedRddUser = rdd.withPipeline(
+			   try{ JavaMongoRDD<Document> aggregatedRddUser = rdd.withPipeline(
 			    	      singletonList(
-			    	        Document.parse("{ $match: {_id: "+id+" } }")));
+			    	        Document.parse("{ $match: {id:"+id+" } }")));
 			    Document jsono=aggregatedRddUser.first();
 		
 			  System.out.println("array "+jsono);
 			    JavaMongoRDD<Document> aggregatedRdd = rdd.withPipeline(
 			    	      singletonList(
-			    	        Document.parse("{ $match: {UserCategory: {  $in:"+ jsono.get("UserCategory")+"} } }")));
+			    	        Document.parse("{ $match: {prefs: {  $in:"+ jsono.get("prefs")+"} } }")));
 
 			   
 			    System.out.println("please");
@@ -62,10 +65,17 @@ public class TraitementSpark {
 			}
 			listUsers=listUsers+"]";
 			jsc.close();
+			 return listUsers; 
+			   }
+			   catch(Exception e){
+				   System.out.println("error "+e.toString());
+				   return e.toString();
+			   }
+			
 			    
 			    
 			    
-			  return listUsers; 
+			 
 					  
 	}
 }

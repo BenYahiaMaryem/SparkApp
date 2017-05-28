@@ -22,8 +22,19 @@ public final class GettingStarted {
 
   public static void main(final String[] args) throws InterruptedException {
 	   TraitementSpark t=new TraitementSpark();
-	  get("/users/:id", (req, res) -> t.traitement(req.params(":id")));
-	  System.out.println("ok");
+	 
+	
+	   
+
+	   
+	 // get("/users/:id", (req, res) -> return t.traitement(req.params(":id")););
+	   get("/users/:id", (req, resp) -> {
+		   resp.body(t.traitement(req.params(":id")));
+		   System.out.println("response is "+resp.body());
+		   return resp.body();
+		});
+
+	 
 
 }
   
